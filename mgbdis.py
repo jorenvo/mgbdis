@@ -206,15 +206,15 @@ class Bank:
             self.rom_base_address = (number - 1) * 0x4000
 
         self.target_addresses = dict({
-            'call': set(),
-            'jp': set(),
-            'jr': set()
+            'CALL': set(),
+            'JP': set(),
+            'JR': set()
         })
 
         self.instruction_label_prefixes = dict({
-            'call': 'Call',
-            'jp': 'Jump',
-            'jr': 'jr'
+            'CALL': 'Call',
+            'JP': 'Jump',
+            'JR': 'jr'
         })
 
         self.disassemble_block_range = dict({
@@ -333,7 +333,7 @@ class Bank:
                 labels.append(label + '::')
         else:
             # otherwise, if the address was marked as a target address, generate a label
-            for instruction_name in ['call', 'jp', 'jr']:
+            for instruction_name in ['CALL', 'JP', 'JR']:
                 if address in self.target_addresses[instruction_name]:
                     labels.append(self.format_label(instruction_name, address) + ':')
 
@@ -359,7 +359,7 @@ class Bank:
         )
 
         if self.style['print_hex'] and address is not None and source_bytes is not None:
-            return '{1} {0}'.format(instruction.upper().rstrip(), hex_word(address)[1:], bytes_to_string(source_bytes))
+            return '{1} {0}'.format(instruction.rstrip(), hex_word(address)[1:], bytes_to_string(source_bytes))
         else:
             return '{0}'.format(instruction.rstrip())
 
@@ -439,7 +439,7 @@ class Bank:
             instruction_name = rom.instruction_names[opcode]
             operands = rom.instruction_operands[opcode]
 
-        if instruction_name == 'stop' or (instruction_name == 'halt' and not self.style['disable_halt_nops']):
+        if instruction_name == 'STOP' or (instruction_name == 'HALT' and not self.style['disable_halt_nops']):
             if rom.data[pc + 1] == 0x00:
                 # rgbds adds a nop instruction after a stop/halt, so if that instruction
                 # exists then we can insert it as a stop/halt command with length 2
@@ -454,12 +454,12 @@ class Bank:
         for operand in operands:
             value = None
 
-            if operand == 'a16':
+            if operand == 'A16':
                 length += 2
                 value = rom.data[pc + 1] + rom.data[pc + 2] * 256
                 operand_values.append(hex_word(value))
 
-            elif operand == '[a16]':
+            elif operand == '[A16]':
                 length += 2
                 value = rom.data[pc + 1] + rom.data[pc + 2] * 256
                 label = self.get_label_for_instruction_operand(value)
@@ -481,14 +481,14 @@ class Bank:
                         operand_values.pop()
                         operand_values.append(hex_word(value))
 
-            elif operand == '[$ff00+a8]' or operand == '[a8]' or operand == '[$ffa8]':
+            elif operand == '[$FF00+A8]' or operand == '[A8]' or operand == '[$FFA8]':
                 length += 1
                 value = rom.data[pc + 1]
                 full_value = 0xff00 + value
                 label = self.get_label_for_instruction_operand(full_value)
                 if label is not None:
                     # when referencing a label, we need to explicitely tell rgbds to use the short load opcode
-                    instruction_name = 'ldh'
+                    instruction_name = 'LDH'
                     operand_values.append('[{}]'.format(label))
                 elif full_value in hardware_labels:
                     operand_values.append('[{}]'.format(hardware_labels[full_value]))
@@ -496,12 +496,12 @@ class Bank:
                     # use one of the ldh_a8_formatters formatters
                     operand_values.append(ldh_a8_formatters[self.style['ldh_a8']](value))
 
-            elif operand == 'd8':
+            elif operand == 'D8':
                 length += 1
                 value = rom.data[pc + 1]
                 operand_values.append(hex_byte(value))
 
-            elif operand == 'd16':
+            elif operand == 'D16':
                 length += 2
                 value = rom.data[pc + 1] + rom.data[pc + 2] * 256
                 label = self.get_label_for_instruction_operand(value)
@@ -510,7 +510,7 @@ class Bank:
                 else:
                     operand_values.append(hex_word(value))
 
-            elif operand == 'r8':
+            elif operand == 'R8':
                 length += 1
                 value = to_signed(rom.data[pc + 1])
                 if value < 0:
@@ -518,7 +518,7 @@ class Bank:
                 else:
                     operand_values.append(hex_byte(value))
 
-            elif operand == 'pc+r8':
+            elif operand == 'PC+R8':
                 length += 1
                 value = to_signed(rom.data[pc + 1])
 
@@ -548,7 +548,7 @@ class Bank:
                     # exit the loop to avoid processing the operands any further
                     break
 
-            elif operand == 'sp+r8':
+            elif operand == 'SP+R8':
                 length += 1
                 value = to_signed(rom.data[pc + 1])
 
@@ -557,7 +557,7 @@ class Bank:
                 else:
                     operand_values.append('sp+' + hex_byte(value))
 
-            elif operand == '[$ff00+c]':
+            elif operand == '[$FF00+C]':
                 operand_values.append('[{0}+c]'.format(hex_word(0xff00)))
 
             elif type(operand) is str:
@@ -567,7 +567,7 @@ class Bank:
                 operand_values.append(hex_byte(operand))
 
 
-            if instruction_name in ['jr', 'jp', 'call'] and value is not None and value < 0x8000:
+            if instruction_name in ['JR', 'JP', 'CALL'] and value is not None and value < 0x8000:
                 mem_address = rom_address_to_mem_address(value)
 
                 if self.first_pass:
@@ -608,11 +608,11 @@ class Bank:
             self.append_output(self.format_instruction(instruction_name, operand_values, pc_mem_address, instruction_bytes))
 
             # add some empty lines after returns and jumps to break up the code blocks
-            if instruction_name in ['ret', 'reti', 'jr', 'jp']:
+            if instruction_name in ['RET', 'RETI', 'JR', 'JP']:
                 if (
-                    instruction_name == 'jr' or
-                    (instruction_name == 'jp' and len(operand_values) > 1) or
-                    (instruction_name == 'ret' and len(operand_values) > 0)
+                    instruction_name == 'JR' or
+                    (instruction_name == 'JP' and len(operand_values) > 1) or
+                    (instruction_name == 'RET' and len(operand_values) > 0)
                 ):
                     # conditional or jr
                     self.append_output('')
