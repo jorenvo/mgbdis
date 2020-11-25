@@ -137,6 +137,7 @@ ldh_a8_formatters = {
     'ldh_a8': lambda value: '[{0}]'.format(hex_byte(value)),
     'ld_ff00_a8': lambda value: '[{0}+{1}]'.format(hex_word(0xff00), hex_byte(value)),
     'ldh_ffa8': lambda value: '[{0}]'.format(hex_word(0xff00 + value)),
+    'ldh_gb_emu': lambda value: '($0xff00+${hex_byte(value)})',
 }
 
 def abort(message):
@@ -145,11 +146,11 @@ def abort(message):
 
 
 def hex_word(value):
-    return format_hex('${:04x}'.format(value))
+    return format_hex('$0x{:04x}'.format(value))
 
 
 def hex_byte(value):
-    return format_hex('${:02x}'.format(value))
+    return format_hex('$0x{:02x}'.format(value))
 
 
 def format_hex(hex_string):
@@ -358,7 +359,7 @@ class Bank:
         )
 
         if self.style['print_hex'] and address is not None and source_bytes is not None:
-            return '0x{1:04x} {0:<50}'.format(instruction.upper(), address, bytes_to_string(source_bytes))
+            return '{1} {0:<50}'.format(instruction.upper(), hex_word(address)[1:], bytes_to_string(source_bytes))
         else:
             return '{0}'.format(instruction.rstrip())
 
@@ -1156,7 +1157,7 @@ parser.add_argument('--indent-spaces', help='Number of spaces to use to indent i
 parser.add_argument('--indent-tabs', help='Use tabs for indenting instructions', action='store_true')
 parser.add_argument('--uppercase-db', help='Use uppercase for DB data declarations', action='store_true')
 parser.add_argument('--hli', help='Mnemonic to use for \'ld [hl+], a\' type instructions.', type=str, default='hl+', choices=['hl+', 'hli', 'ldi'])
-parser.add_argument('--ldh_a8', help='Mnemonic to use for \'ldh [a8], a\' type instructions.', type=str, default='ldh_a8', choices=['ldh_a8', 'ldh_ffa8', 'ld_ff00_a8'])
+parser.add_argument('--ldh_a8', help='Mnemonic to use for \'ldh [a8], a\' type instructions.', type=str, default='ldh_a8', choices=['ldh_a8', 'ldh_ffa8', 'ld_ff00_a8', 'ldh_gb_emu'])
 parser.add_argument('--ld_c', help='Mnemonic to use for \'ld [c], a\' type instructions.', type=str, default='ld_c', choices=['ld_c', 'ldh_c', 'ld_ff00_c'])
 parser.add_argument('--disable-halt-nops', help='Disable RGBDS\'s automatic insertion of \'nop\' instructions after \'halt\' instructions.', action='store_true')
 parser.add_argument('--disable-auto-ldh', help='Disable RGBDS\'s automatic optimisation of \'ld [$ff00+a8], a\' to \'ldh [a8], a\' instructions. Requires RGBDS >= v0.3.7', action='store_true')

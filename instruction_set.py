@@ -583,7 +583,11 @@ instruction_variants = {
         'ld_ff00_a8': {
             0xe0: 'ld [$ff00+a8],a',
             0xf0: 'ld a,[$ff00+a8]'
-        }
+        },
+        'ldh_gb_emu': {
+            0xe0: 'ld ($0xff00+a8),a',
+            0xf0: 'ld a,($ff00+a8)'
+        },
     },
     'ld_c': {      
         'ld_c': {
