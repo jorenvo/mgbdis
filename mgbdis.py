@@ -154,7 +154,7 @@ def hex_byte(value):
 
 
 def format_hex(hex_string):
-    if style['uppercase_hex']:
+    if False or style['uppercase_hex']:
         return hex_string.upper()
     else:
         return hex_string.lower()
