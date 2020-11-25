@@ -355,11 +355,11 @@ class Bank:
             indentation=self.style['indentation'],
             instruction_name=instruction_name,
             operand_padding=self.style['operand_padding'],
-            operands=', '.join(operands)
+            operands=','.join(operands)
         )
 
         if self.style['print_hex'] and address is not None and source_bytes is not None:
-            return '{1} {0:<50}'.format(instruction.upper(), hex_word(address)[1:], bytes_to_string(source_bytes))
+            return '{1} {0}'.format(instruction.upper().rstrip(), hex_word(address)[1:], bytes_to_string(source_bytes))
         else:
             return '{0}'.format(instruction.rstrip())
 
