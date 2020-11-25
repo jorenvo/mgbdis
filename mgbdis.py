@@ -355,7 +355,7 @@ class Bank:
             indentation=self.style['indentation'],
             instruction_name=instruction_name,
             operand_padding=self.style['operand_padding'],
-            operands=','.join(operands)
+            operands=', '.join(operands)
         )
 
         if self.style['print_hex'] and address is not None and source_bytes is not None:
