@@ -1,3 +1,11 @@
+# jvo
+
+To get similar output:
+
+```
+./mgbdis.py --disable-halt-nops --disable-auto-ldh --overwrite --indent-spaces 0 --ldh_a8 ldh_gb_emu --print-hex ~/Code/gb-emu-private/roms/rom.gb
+```
+
 # mgbdis 
 
 A Game Boy ROM disassembler.
