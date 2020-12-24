@@ -581,12 +581,12 @@ instruction_variants = {
             0XF0: 'LDH A,($FFA8)'
         },
         'ld_ff00_a8': {
-            0XE0: 'LD ($FF00+A8),A',
-            0XF0: 'LD A,($FF00+A8)'
+            0XE0: 'LD ($0xFF00+A8),A',
+            0XF0: 'LD A,($0xFF00+A8)'
         },
         'ldh_gb_emu': {
-            0XE0: 'LD ($0XFF00+A8),A',
-            0XF0: 'LD A,($FF00+A8)'
+            0XE0: 'LD ($0xFF00+A8),A',
+            0XF0: 'LD A,($0xFF00+A8)'
         },
     },
     'ld_c': {      
@@ -599,8 +599,8 @@ instruction_variants = {
             0XF2: 'LDH A,(C)'
         },
         'ld_ff00_c': {
-            0XE2: 'LD ($FF00+C),A',
-            0XF2: 'LD A,($FF00+C)'
+            0XE2: 'LD ($0xFF00+C),A',
+            0XF2: 'LD A,($0xFF00+C)'
         }
     }
 }

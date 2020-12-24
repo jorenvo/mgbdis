@@ -135,9 +135,9 @@ hardware_labels = {
 
 ldh_a8_formatters = {
     'ldh_a8': lambda value: '[{0}]'.format(hex_byte(value)),
-    'ld_ff00_a8': lambda value: '[{0}+{1}]'.format(hex_word(0xff00), hex_byte(value)),
+    'ld_ff00_a8': lambda value: '[{0}+{1}]'.format("$0xFF00", hex_byte(value)),
     'ldh_ffa8': lambda value: '[{0}]'.format(hex_word(0xff00 + value)),
-    'ldh_gb_emu': lambda value: '($0xff00+${hex_byte(value)})',
+    'ldh_gb_emu': lambda value: f'($0xFF00+{hex_byte(value)})',
 }
 
 def abort(message):
@@ -481,7 +481,7 @@ class Bank:
                         operand_values.pop()
                         operand_values.append(hex_word(value))
 
-            elif operand == '[$FF00+A8]' or operand == '[A8]' or operand == '[$FFA8]':
+            elif operand == '($0xFF00+A8)' or operand == '[A8]' or operand == '[$FFA8]':
                 length += 1
                 value = rom.data[pc + 1]
                 full_value = 0xff00 + value
@@ -557,8 +557,8 @@ class Bank:
                 else:
                     operand_values.append('sp+' + hex_byte(value))
 
-            elif operand == '[$FF00+C]':
-                operand_values.append('[{0}+c]'.format(hex_word(0xff00)))
+            elif operand == '[$0xFF00+C]':
+                operand_values.append('[$0xFF00+c]')
 
             elif type(operand) is str:
                 operand_values.append(operand)
