@@ -459,7 +459,7 @@ class Bank:
                 value = rom.data[pc + 1] + rom.data[pc + 2] * 256
                 operand_values.append(hex_word(value))
 
-            elif operand == '[A16]':
+            elif operand == '(A16)':
                 length += 2
                 value = rom.data[pc + 1] + rom.data[pc + 2] * 256
                 label = self.get_label_for_instruction_operand(value)
