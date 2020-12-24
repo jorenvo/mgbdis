@@ -134,9 +134,9 @@ hardware_labels = {
 }
 
 ldh_a8_formatters = {
-    'ldh_a8': lambda value: '[{0}]'.format(hex_byte(value)),
-    'ld_ff00_a8': lambda value: '[{0}+{1}]'.format("$0xff00", hex_byte(value)),
-    'ldh_ffa8': lambda value: '[{0}]'.format(hex_word(0xff00 + value)),
+    'ldh_a8': lambda value: '({0})'.format(hex_byte(value)),
+    'ld_ff00_a8': lambda value: '({0}+{1})'.format("$0xff00", hex_byte(value)),
+    'ldh_ffa8': lambda value: '({0})'.format(hex_word(0xff00 + value)),
     'ldh_gb_emu': lambda value: f'($0xff00+{hex_byte(value)})',
 }
 
@@ -466,7 +466,7 @@ class Bank:
                 if label:
                     operand_values.append('[' + label + ']')
                 else:
-                    operand_values.append('[' + hex_word(value) + ']')
+                    operand_values.append('(' + hex_word(value) + ')')
 
                 # rgbds converts "ld [$ff40],a" into "ld [$ff00+40],a" automatically,
                 # so use a macro to encode it as data to ensure exact binary reproduction of the rom
