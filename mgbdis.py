@@ -132,6 +132,7 @@ hardware_labels = {
     0xFF76: 'rPCM12',
     0xFF77: 'rPCM34',
 }
+hardware_labels = {} # TODO JOV: re-enable whenever
 
 ldh_a8_formatters = {
     'ldh_a8': lambda value: '({0})'.format(hex_byte(value)),
@@ -526,10 +527,10 @@ class Bank:
                 value = pc + 2 + value
 
                 relative_value = value - pc
-                if relative_value >= 0:
-                    operand_values.append('@+' + hex_byte(relative_value))
-                else:
-                    operand_values.append('@-' + hex_byte(relative_value * -1))
+                if relative_value >= 0: # $0x10
+                    operand_values.append(hex_byte(relative_value))
+                else: # $-0x10
+                    operand_values.append("$-0x{:02x}".format(relative_value * -1))
 
                 target_bank = value // 0x4000
 
@@ -570,19 +571,19 @@ class Bank:
             if instruction_name in ['JR', 'JP', 'CALL'] and value is not None and value < 0x8000:
                 mem_address = rom_address_to_mem_address(value)
 
-                if self.first_pass:
-                    # dont allow switched banks to create labels in bank 0
-                    is_address_in_current_bank = (mem_address < 0x4000 and self.bank_number == 0) or (mem_address >= 0x4000 and self.bank_number > 0)
-                    if is_address_in_current_bank:
-                        # add the label
-                        self.add_target_address(instruction_name, mem_address)
-                else:
-                    # fetch the label name
-                    label = self.get_label_for_jump_target(instruction_name, mem_address)
-                    if label is not None:
-                        # remove the address from operand values and use the label instead
-                        operand_values.pop()
-                        operand_values.append(label)
+                # if self.first_pass:
+                #     # dont allow switched banks to create labels in bank 0
+                #     is_address_in_current_bank = (mem_address < 0x4000 and self.bank_number == 0) or (mem_address >= 0x4000 and self.bank_number > 0)
+                #     if is_address_in_current_bank:
+                #         # add the label
+                #         self.add_target_address(instruction_name, mem_address)
+                # else:
+                #     # fetch the label name
+                #     label = self.get_label_for_jump_target(instruction_name, mem_address)
+                #     if label is not None:
+                #         # remove the address from operand values and use the label instead
+                #         operand_values.pop()
+                #         operand_values.append(label)
 
 
         # check the instruction is not spanning 2 banks
