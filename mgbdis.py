@@ -132,7 +132,7 @@ hardware_labels = {
     0xFF76: 'rPCM12',
     0xFF77: 'rPCM34',
 }
-hardware_labels = {} # TODO JOV: re-enable whenever
+hardware_labels = {} # TODO JVO: re-enable whenever
 
 ldh_a8_formatters = {
     'ldh_a8': lambda value: '({0})'.format(hex_byte(value)),
@@ -527,6 +527,7 @@ class Bank:
                 value = pc + 2 + value
 
                 relative_value = value - pc
+                relative_value -= 2 # JVO: offset for size of instruction
                 if relative_value >= 0: # $0x10
                     operand_values.append(hex_byte(relative_value))
                 else: # $-0x10
