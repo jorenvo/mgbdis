@@ -1,7 +1,7 @@
 instructions = {
 
     0X00: 'NOP',
-    0X01: 'LD BC,d16',
+    0X01: 'LD BC,D16',
     0X02: 'LD (bc),A',
     0x03: 'INC BC',
     0x04: 'INC B',
